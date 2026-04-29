@@ -1,2 +1,2 @@
-Add "source REPO_FOLDER/install/setup.bash" to .bashrc
-run colcon build in REPO_FOLDER
+- Add "source REPO_FOLDER/install/setup.bash" to .bashrc
+- run colcon build in REPO_FOLDER

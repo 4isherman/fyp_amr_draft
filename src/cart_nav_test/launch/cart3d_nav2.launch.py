@@ -85,7 +85,8 @@ def generate_launch_description():
         executable='pointcloud_to_laserscan_node',
         name='pointcloud_to_laserscan',
         remappings=[
-            ('cloud_in', '/lidar_3d/points'),   # your 3D lidar topic
+            # ('cloud_in', '/lidar_3d/points'),   # your 3D lidar topic
+            ('cloud_in', '/cropbox_filtered_cloud'),
             ('scan',     '/scan')               # output to Cartographer
         ],
         parameters=[

@@ -138,7 +138,6 @@ def generate_launch_description():
             '-name', 'my_robot',
             '-topic', '/robot_description',
             '-x', '-2',
-            # '-x', '-4',
             '-y', '0',
             '-z', '0.3'
         ],
@@ -175,26 +174,83 @@ def generate_launch_description():
         output='screen'
     )
 
+    # -------------- Lidar Filters -------------
+    # passthrough filter to remove ground points
+    filter_passthrough_node = Node(
+        package='pcl_ros',
+        executable='filter_passthrough_node',
+        name='filter_passthrough_node',
+        remappings=[
+            ('input', '/lidar_3d/points'),
+            ('output', '/passthrough_filtered_cloud')
+        ],
+        parameters=[{
+            'use_sim_time': True,
+            'filter_field_name': 'z',
+            'filter_limit_min': -0.2,   # remove ground
+            'filter_limit_max': 2.0,
+            'filter_limit_negative': False
+        }],
+    )
+
+    # crop box filter to remove points on robot
+    filter_crop_box_node = Node(
+        package='pcl_ros',
+        executable='filter_crop_box_node',
+        name='filter_crop_box_node',
+        remappings=[
+            ('input', '/passthrough_filtered_cloud'),
+            ('output', '/cropbox_filtered_cloud')
+        ],
+        parameters=[{
+            'input_frame': 'base_footprint',
+            'min_x': -0.3,
+            'max_x': 0.3,
+            'min_y': -0.3,
+            'max_y': 0.3,
+            'min_z': 0.0,
+            'max_z': 0.1,
+            'negative': True   # THIS removes the box region
+        }]
+    )
+
+    # voxel grid filter to remove excess points
+    # output used for saving pcd only
+    filter_voxel_grid_node = Node(
+        package='pcl_ros',
+        executable='filter_voxel_grid_node',
+        name='filter_voxel_grid_node',
+        remappings=[
+            ('input', '/cropbox_filtered_cloud'),
+            ('output', '/cloud_final')
+        ],
+        parameters=[{
+            'filter_limit_max': 2.0,
+            'filter_limit_min': -1.0,
+            'leaf_size': 0.1  # 10cm resolution
+        }]
+    )
+
     launch_nodes = [
-        DeclareLaunchArgument('use_sim_time', default_value='true',
-                            description='Use simulation time'),
-        DeclareLaunchArgument('world', default_value=world_file_path,
-                            description='Path to world file'),
-        DeclareLaunchArgument(
-            'configuration_directory',
-            default_value=os.path.join(pkg_dir, 'config'),
-            description='Directory containing Cartographer configuration files'
-        ),
-        DeclareLaunchArgument(
-            'resolution',
-            default_value='0.05',
-            description='Resolution of the occupancy grid'
-        ),
-        DeclareLaunchArgument(
-            'publish_period_sec',
-            default_value='1.0',
-            description='Period for publishing the occupancy grid'
-        ),
+        # DeclareLaunchArgument('use_sim_time', default_value='true',
+        #                     description='Use simulation time'),
+        # DeclareLaunchArgument('world', default_value=world_file_path,
+        #                     description='Path to world file'),
+        # DeclareLaunchArgument(
+        #     'configuration_directory',
+        #     default_value=os.path.join(pkg_dir, 'config'),
+        #     description='Directory containing Cartographer configuration files'
+        # ),
+        # DeclareLaunchArgument(
+        #     'resolution',
+        #     default_value='0.05',
+        #     description='Resolution of the occupancy grid'
+        # ),
+        # DeclareLaunchArgument(
+        #     'publish_period_sec',
+        #     default_value='1.0',
+        #     description='Period for publishing the occupancy grid'
+        # ),
         robot_state_publisher,
         joint_state_publisher,
         rviz,
@@ -203,6 +259,9 @@ def generate_launch_description():
         gz_ros_bridge,
         ekf_node,
         # navsat_node,
+        filter_passthrough_node,
+        filter_crop_box_node,
+        filter_voxel_grid_node,
     ]
     
     # Add map server nodes if map exists
