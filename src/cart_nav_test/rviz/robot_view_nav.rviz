@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /LocalCostmap1
       Splitter Ratio: 0.5
     Tree Height: 597
   - Class: rviz_common/Selection
@@ -203,7 +202,7 @@ Visualization Manager:
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 1.3287590742111206
-        Min Value: -0.15038852393627167
+        Min Value: -0.08930537104606628
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -228,7 +227,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /lidar_3d/points
+        Value: /cropbox_filtered_cloud
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
