@@ -6,5 +6,9 @@ currently messing with ekf to fix slanting, it didnt work and it caused the flic
 
 temp switch to 2d cartographer, modified nav2 param and ekf for 2d. need to tune global planner
 
+
+GLOBAL PLANNER IS BROKEN, /MAP is returning -1
+
 ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 2.5, y: 2.0, z: 0.0}, orientation: {w: 1.0}}}" --once
+ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 2.5, y: -2.0, z: 0.0}, orientation: {w: 1.0}}}" --once
 ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}" --once

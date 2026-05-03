@@ -72,33 +72,31 @@ Visualization Manager:
           Value: true
         odom:
           Value: true
-      Marker Scale: 1
+      Marker Scale: 0.699999988079071
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
-          base_link:
-            camera_link:
-              camera_depth_frame:
-                {}
-            caster_wheel:
-              {}
-            front_left_wheel:
-              {}
-            front_right_wheel:
-              {}
-            imu_link:
-              {}
-            lidar_3d:
-              {}
-            navsat_link:
-              {}
         map:
-          {}
-        odom:
-          {}
+          odom:
+            base_footprint:
+              base_link:
+                camera_link:
+                  camera_depth_frame:
+                    {}
+                caster_wheel:
+                  {}
+                front_left_wheel:
+                  {}
+                front_right_wheel:
+                  {}
+                imu_link:
+                  {}
+                lidar_3d:
+                  {}
+                navsat_link:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -180,7 +178,7 @@ Visualization Manager:
       Binary threshold: 100
       Class: rviz_default_plugins/Map
       Color Scheme: map
-      Draw Behind: false
+      Draw Behind: true
       Enabled: true
       Name: Map
       Topic:
@@ -201,8 +199,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.3287590742111206
-        Min Value: -0.08930537104606628
+        Max Value: 1.2497590780258179
+        Min Value: -0.16830536723136902
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -265,26 +263,6 @@ Visualization Manager:
       Use rainbow: true
       Value: false
     - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz_default_plugins/Pose
-      Color: 255; 25; 0
-      Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: Goal Pose
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Arrow
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /goal_pose
-      Value: true
-    - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
       Color: 25; 255; 0
@@ -313,46 +291,62 @@ Visualization Manager:
         Value: /received_global_plan
       Value: true
     - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz_default_plugins/PoseWithCovariance
-      Color: 255; 25; 0
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.30000001192092896
-          Color: 204; 51; 204
-          Scale: 1
-          Value: true
-        Value: true
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 100; 50; 255
       Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: InitialPose
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Arrow
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: LocalPlan
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /initialpose
+        Value: /local_plan
+      Value: true
+    - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: GlobalCostmap
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /global_costmap/costmap
+      Update Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /global_costmap/costmap_updates
+      Use Timestamp: false
       Value: true
     - Alpha: 0.5
       Binary representation: false
       Binary threshold: 100
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
-      Draw Behind: false
+      Draw Behind: true
       Enabled: true
       Name: LocalCostmap
       Topic:
@@ -370,10 +364,36 @@ Visualization Manager:
         Value: /local_costmap/costmap_updates
       Use Timestamp: false
       Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Polygon
+      Color: 255; 255; 0
+      Enabled: true
+      Name: PolygonSlow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_slowdown
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Polygon
+      Color: 255; 0; 0
+      Enabled: true
+      Name: PolygonStop
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /polygon_stop
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -416,25 +436,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.31545639038086
+      Distance: 10.154659271240234
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.504385232925415
-        Y: -0.07065615057945251
-        Z: 0.323772132396698
+        X: 1.998592734336853
+        Y: 0.005361313000321388
+        Z: -0.3304010331630707
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.219999074935913
+      Pitch: 1.5647963285446167
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.9181699752807617
+      Yaw: 3.1363425254821777
     Saved: ~
 Window Geometry:
   Displays:

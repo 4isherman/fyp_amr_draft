@@ -16,7 +16,7 @@ def generate_launch_description():
     # urdf_file = os.path.join(pkg_dir, 'urdf', 'amr.urdf.xacro')  # XACRO
 
     # Path to map file (optional)
-    map_file = os.path.join(pkg_dir, 'maps', 'my_map.yaml')  # Adjust if you have a map
+    map_file = os.path.join(pkg_dir, 'maps', 'CARTOTEST_map.yaml')  # Adjust if you have a map
 
     world_name = 'turtlebot3_world'
     # world_file = '/opt/ros/jazzy/share/turtlebot3_gazebo/worlds/turtlebot3_world.world'
@@ -58,6 +58,7 @@ def generate_launch_description():
         get_package_share_directory('cart_nav_test'),
         'config',
         'ekf_def.yaml'
+        # 'ekf.yaml'
     )
     ekf_node = Node(
         package='robot_localization',
@@ -139,7 +140,8 @@ def generate_launch_description():
             '-topic', '/robot_description',
             '-x', '-2',
             '-y', '0',
-            '-z', '0.3'
+            '-z', '0.3',
+            '-Y', '0.0',
         ],
         output='screen'
     )
@@ -204,6 +206,7 @@ def generate_launch_description():
         ],
         parameters=[{
             'input_frame': 'base_footprint',
+            # 'input_frame': 'base_link',
             'min_x': -0.3,
             'max_x': 0.3,
             'min_y': -0.3,
@@ -232,25 +235,29 @@ def generate_launch_description():
     )
 
     launch_nodes = [
-        # DeclareLaunchArgument('use_sim_time', default_value='true',
-        #                     description='Use simulation time'),
-        # DeclareLaunchArgument('world', default_value=world_file_path,
-        #                     description='Path to world file'),
-        # DeclareLaunchArgument(
-        #     'configuration_directory',
-        #     default_value=os.path.join(pkg_dir, 'config'),
-        #     description='Directory containing Cartographer configuration files'
-        # ),
-        # DeclareLaunchArgument(
-        #     'resolution',
-        #     default_value='0.05',
-        #     description='Resolution of the occupancy grid'
-        # ),
-        # DeclareLaunchArgument(
-        #     'publish_period_sec',
-        #     default_value='1.0',
-        #     description='Period for publishing the occupancy grid'
-        # ),
+        DeclareLaunchArgument('use_sim_time', default_value='true',
+                            description='Use simulation time'),
+        DeclareLaunchArgument('world', default_value=world_file_path,
+                            description='Path to world file'),
+        DeclareLaunchArgument(
+            'configuration_directory',
+            default_value=os.path.join(pkg_dir, 'config'),
+            description='Directory containing Cartographer configuration files'
+        ),
+        DeclareLaunchArgument(
+            'resolution',
+            default_value='0.05',
+            description='Resolution of the occupancy grid'
+        ),
+        DeclareLaunchArgument(
+            'publish_period_sec',
+            default_value='1.0',
+            description='Period for publishing the occupancy grid'
+        ),
+
+        # map_server,
+        # lifecycle_manager,
+
         robot_state_publisher,
         joint_state_publisher,
         rviz,
@@ -265,9 +272,11 @@ def generate_launch_description():
     ]
     
     # Add map server nodes if map exists
-    if map_server:
-        launch_nodes.append(map_server)
-    if lifecycle_manager:
-        launch_nodes.append(lifecycle_manager)
+    # if map_server:
+    #     launch_nodes.append(map_server)
+    #     print(f"MAP SERVER EXISTS")
+    # if lifecycle_manager:
+    #     launch_nodes.append(lifecycle_manager)
+    #     print(f"LIFECYCLE MANAGER EXISTS")
     
     return LaunchDescription(launch_nodes)

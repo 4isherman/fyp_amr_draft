@@ -9,7 +9,7 @@ ekf_filter_node:
 
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_footprint
+    base_link_frame:  base_footprint #base_link #
     world_frame: odom
 
     transform_time_offset: 0.0
@@ -22,12 +22,19 @@ ekf_filter_node:
     # ─── Wheel Odometry ───────────────────────────────────────
     # Source: /odom topic (nav_msgs/Odometry)
     odom0: odom
+    # odom0_config: [
+    #   true,  true,  false,    # x, y, z          → fuse x/y position
+    #   false, false, true,    # roll, pitch, yaw  → let IMU handle rotation
+    #   true,  true,  false,    # vx, vy, vz        → fuse linear velocity
+    #   false, false, true,     # vroll, vpitch, vyaw → fuse angular velocity from wheels
+    #   false, false, false     # ax, ay, az        → don't fuse acceleration
+    # ]
     odom0_config: [
-      true,  true,  false,    # x, y, z          → fuse x/y position
-      false, false, true,    # roll, pitch, yaw  → let IMU handle rotation
-      true,  true,  false,    # vx, vy, vz        → fuse linear velocity
-      false, false, true,     # vroll, vpitch, vyaw → fuse angular velocity from wheels
-      false, false, false     # ax, ay, az        → don't fuse acceleration
+      true,  true,  false,
+      false, false, true, 
+      true,  true,  false,
+      false, false, true, 
+      true, true, false 
     ]
     odom0_differential: false       # Use absolute pose from odometry
     odom0_relative: false
@@ -38,12 +45,19 @@ ekf_filter_node:
     # ─── IMU ──────────────────────────────────────────────────
     # Source: /imu topic (sensor_msgs/Imu)
     imu0: imu
+    # imu0_config: [
+    #   false, false, false,    # x, y, z           → IMU has no position info
+    #   false, false, false,    # roll, pitch, yaw   → ❌ don't fuse absolute yaw (drift source!)
+    #   false, false, false,    # vx, vy, vz         → no linear velocity
+    #   true,  true,  true,     # vroll, vpitch, vyaw → ✅ fuse angular velocity (gyro)
+    #   true,  false, false     # ax, ay, az         → ✅ fuse X accel only (forward motion)
+    # ]
     imu0_config: [
-      false, false, false,    # x, y, z           → IMU has no position info
-      false, false, false,    # roll, pitch, yaw   → ❌ don't fuse absolute yaw (drift source!)
-      false, false, false,    # vx, vy, vz         → no linear velocity
-      true,  true,  true,     # vroll, vpitch, vyaw → ✅ fuse angular velocity (gyro)
-      true,  false, false     # ax, ay, az         → ✅ fuse X accel only (forward motion)
+      false, false, false,
+      false, false, false,
+      true, true, false,
+      false,  false,  true, 
+      true,  true, false 
     ]
     imu0_differential: false
     imu0_relative: true              # ✅ Use relative IMU (avoids absolute yaw drift)
