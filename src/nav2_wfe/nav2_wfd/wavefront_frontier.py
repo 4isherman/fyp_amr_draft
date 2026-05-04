@@ -40,8 +40,8 @@ import math
 
 OCC_THRESHOLD = 10
 # OCC_THRESHOLD = 300000
-MIN_FRONTIER_SIZE = 5
-# MIN_FRONTIER_SIZE = 2
+# MIN_FRONTIER_SIZE = 5
+MIN_FRONTIER_SIZE = 30
 
 class Costmap2d():
     class CostValues(Enum):
@@ -190,7 +190,7 @@ def getFrontier(pose, costmap, logger):
 
                 if q.classification & (PointClassification.MapClosed.value | PointClassification.FrontierClosed.value) != 0:
                     continue
-                print("isFrontierPoint2 Called")
+                # print("isFrontierPoint2 Called")
                 if isFrontierPoint(q, costmap, fCache):
                     newFrontier.append(q)
 
@@ -235,7 +235,7 @@ def getNeighbors(point, costmap, fCache):
 
 def isFrontierPoint(point, costmap, fCache):
     if costmap.getCost(point.mapX, point.mapY) != OccupancyGrid2d.CostValues.NoInformation.value:
-        print(f"isFrontierPoint failed: x={point.mapX} y={point.mapY} ")
+        # print(f"isFrontierPoint failed: x={point.mapX} y={point.mapY} ")
         return False
     # print(f"isFrontierPoint success: {costmap.getCost(point.mapX, point.mapY)} || {OccupancyGrid2d.CostValues.NoInformation.value}")
     hasFree = False

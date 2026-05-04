@@ -18,9 +18,10 @@ def generate_launch_description():
     # Path to map file (optional)
     map_file = os.path.join(pkg_dir, 'maps', 'CARTOTEST_map.yaml')  # Adjust if you have a map
 
-    world_name = 'turtlebot3_world'
-    # world_file = '/opt/ros/jazzy/share/turtlebot3_gazebo/worlds/turtlebot3_world.world'
-    world_file_path = os.path.join(pkg_dir, 'worlds', f'{world_name}.world')
+    # world_name = 'turtlebot3_world.world'
+    world_name = 'parking_lot_plug.sdf'
+    
+    world_file_path = os.path.join(pkg_dir, 'worlds', f'{world_name}')
     
     # Read URDF content
     with open(urdf_file, 'r') as f:
@@ -71,18 +72,18 @@ def generate_launch_description():
     )
 
     # EKF for gps
-    # navsat_node = Node(
-    #     package="robot_localization",
-    #     executable="navsat_transform_node",
-    #     name="navsat_transform",
-    #     output="screen",
-    #     parameters=["config/navsat.yaml"],
-    #     remappings=[
-    #         ("imu/data", "/imu"),
-    #         ("gps/fix", "/navsat"),
-    #         ("odometry/filtered", "/odometry/filtered")
-    #     ]
-    # )
+    navsat_node = Node(
+        package="robot_localization",
+        executable="navsat_transform_node",
+        name="navsat_transform",
+        output="screen",
+        parameters=["config/navsat.yaml"],
+        remappings=[
+            ("imu/data", "/imu"),
+            ("gps/fix", "/navsat"),
+            ("odometry/filtered", "/odometry/filtered")
+        ]
+    )
     
     # Map Server (optional - if you have a map to display)
     map_server = Node(
@@ -135,13 +136,21 @@ def generate_launch_description():
     spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
+        # arguments=[
+        #     '-name', 'my_robot',
+        #     '-topic', '/robot_description',
+        #     '-x', '-2',
+        #     '-y', '0',
+        #     '-z', '0.3',
+        #     '-Y', '0.0',
+        # ],
         arguments=[
             '-name', 'my_robot',
             '-topic', '/robot_description',
-            '-x', '-2',
+            '-x', '0',
             '-y', '0',
             '-z', '0.3',
-            '-Y', '0.0',
+            '-Y', '3.142',
         ],
         output='screen'
     )
@@ -265,7 +274,7 @@ def generate_launch_description():
         spawn_entity,
         gz_ros_bridge,
         ekf_node,
-        # navsat_node,
+        navsat_node,
         filter_passthrough_node,
         filter_crop_box_node,
         filter_voxel_grid_node,

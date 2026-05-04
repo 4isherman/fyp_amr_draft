@@ -435,14 +435,14 @@
                 <scan>
                     <horizontal>
                         <!-- <samples>720</samples> -->
-                        <samples>200</samples>
+                        <samples>500</samples>
                         <resolution>1</resolution>
                         <min_angle>-3.14</min_angle>
                         <max_angle>3.14</max_angle>
                     </horizontal>
                     <vertical>
-                        <!-- <samples>64</samples> -->
-                        <samples>32</samples>
+                        <samples>64</samples>
+                        <!-- <samples>32</samples> -->
                         <resolution>1</resolution>
                         <min_angle>-0.26</min_angle>
                         <max_angle>0.26</max_angle>
