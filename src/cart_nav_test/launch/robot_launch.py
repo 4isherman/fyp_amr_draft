@@ -12,7 +12,7 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory(pkg_name)
     
     # Path to URDF file
-    urdf_file = os.path.join(pkg_dir, 'urdf', f'robot.urdf')  # Adjust path as needed
+    urdf_file = os.path.join(pkg_dir, 'urdf', f'amr.urdf')  # Adjust path as needed
     # urdf_file = os.path.join(pkg_dir, 'urdf', 'amr.urdf.xacro')  # XACRO
 
     # Path to map file (optional)

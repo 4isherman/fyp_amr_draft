@@ -20,8 +20,9 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': True,
             'fixed_frame': 'map',
+            # 'fixed_frame': 'base_footprint', # do not use, will smear
             'compressed' : True,
-            # 'binary' : True,
+            'binary' : True,
             # 'rgb' : True,
         }],
     )

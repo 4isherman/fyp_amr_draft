@@ -48,6 +48,10 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        back_left_wheel:
+          Value: true
+        back_right_wheel:
+          Value: true
         base_footprint:
           Value: true
         base_link:
@@ -55,8 +59,6 @@ Visualization Manager:
         camera_depth_frame:
           Value: true
         camera_link:
-          Value: true
-        caster_wheel:
           Value: true
         front_left_wheel:
           Value: true
@@ -82,11 +84,13 @@ Visualization Manager:
           odom:
             base_footprint:
               base_link:
+                back_left_wheel:
+                  {}
+                back_right_wheel:
+                  {}
                 camera_link:
                   camera_depth_frame:
                     {}
-                caster_wheel:
-                  {}
                 front_left_wheel:
                   {}
                 front_right_wheel:
@@ -117,6 +121,16 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        back_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        back_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         base_footprint:
           Alpha: 1
           Show Axes: false
@@ -131,11 +145,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
         camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        caster_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -199,8 +208,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.2497590780258179
-        Min Value: -0.16830536723136902
+        Max Value: 2.4762134552001953
+        Min Value: 0.28013408184051514
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -318,11 +327,11 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /local_plan
       Value: true
-    - Alpha: 0.699999988079071
+    - Alpha: 0.30000001192092896
       Binary representation: false
       Binary threshold: 100
       Class: rviz_default_plugins/Map
-      Color Scheme: map
+      Color Scheme: costmap
       Draw Behind: false
       Enabled: true
       Name: GlobalCostmap
@@ -436,25 +445,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 10.154659271240234
+      Distance: 20.254844665527344
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.998592734336853
-        Y: 0.005361313000321388
-        Z: -0.3304010331630707
+        X: 3.6509392261505127
+        Y: 0.21580719947814941
+        Z: -0.056925445795059204
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5647963285446167
+      Pitch: 1.2897965908050537
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1363425254821777
+      Yaw: 3.2013466358184814
     Saved: ~
 Window Geometry:
   Displays:

@@ -7,8 +7,8 @@ def generate_launch_description():
     pkg_name = 'cart_nav_test'
     pkg_dir = get_package_share_directory(pkg_name)
     
-    nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_tuned_2d.yaml')
-    # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_2d_costmap_debug.yaml')
+    # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_tuned_2d.yaml')
+    nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_amr.yaml')
 
     planner_server = Node(
         package='nav2_planner',
