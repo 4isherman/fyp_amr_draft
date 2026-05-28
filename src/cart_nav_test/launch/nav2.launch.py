@@ -8,7 +8,14 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory(pkg_name)
     
     # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_tuned_2d.yaml')
-    nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_amr.yaml')
+    # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_amr_proper.yaml')
+
+    nav2_params = os.path.join(
+        get_package_share_directory('cart_nav_test'),
+        'config',
+        'nav2_params_amr_proper.yaml'
+    )
+
 
     planner_server = Node(
         package='nav2_planner',
@@ -79,17 +86,17 @@ def generate_launch_description():
         parameters=[nav2_params]
     )
 
-    map_file = os.path.join(pkg_dir, 'maps', 'CARTOTEST_map.yaml')
-    map_server = Node(
-        package='nav2_map_server',
-        executable='map_server',
-        name='map_server',
-        output='screen',
-        parameters=[{
-            'use_sim_time': True,
-            'yaml_filename': map_file,
-        }]
-    )
+    # map_file = os.path.join(pkg_dir, 'maps', 'CARTOTEST_map.yaml')
+    # map_server = Node(
+    #     package='nav2_map_server',
+    #     executable='map_server',
+    #     name='map_server',
+    #     output='screen',
+    #     parameters=[{
+    #         'use_sim_time': True,
+    #         'yaml_filename': map_file,
+    #     }]
+    # )
 
     lifecycle_manager = Node(
         package='nav2_lifecycle_manager',
@@ -102,13 +109,12 @@ def generate_launch_description():
             'node_names': [
                 'planner_server',
                 'controller_server',
-                'smoother_server',
+                # 'smoother_server',
                 'bt_navigator',
                 'behavior_server',
-                'velocity_smoother',
+                # 'velocity_smoother',
                 'collision_monitor',
                 'waypoint_follower',
-                # 'map_server',
             ]
         }]
     )
@@ -116,10 +122,10 @@ def generate_launch_description():
     return LaunchDescription([
         planner_server,
         controller_server,
-        smoother_server,
+        # smoother_server,
         behavior_server,
         bt_navigator,
-        velocity_smoother,
+        # velocity_smoother,
         collision_monitor,
         waypoint_follower,
         # map_server,

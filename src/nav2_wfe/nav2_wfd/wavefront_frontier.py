@@ -39,9 +39,13 @@ import numpy as np
 import math
 
 # OCC_THRESHOLD = 10
-OCC_THRESHOLD = 200
+OCC_THRESHOLD = 1 
 # MIN_FRONTIER_SIZE = 5
 MIN_FRONTIER_SIZE = 100
+
+SEARCH_RADIUS = 12
+GLOBAL_START_X = 0
+GLOBAL_START_Y = 0
 
 class Costmap2d():
     class CostValues(Enum):
@@ -162,7 +166,7 @@ def findFree(mx, my, costmap):
 
 def getFrontier(pose, costmap, logger):
     fCache = FrontierCache()
-    print("getFrontier Called")
+    # print("getFrontier Called")
     fCache.clear()
 
     mx, my = costmap.worldToMap(pose.position.x, pose.position.y)
@@ -179,12 +183,12 @@ def getFrontier(pose, costmap, logger):
 
         if p.classification & PointClassification.MapClosed.value != 0:
             continue
-        # print("isFrontierPoint1 Called")
+
         if isFrontierPoint(p, costmap, fCache):
             p.classification = p.classification | PointClassification.FrontierOpen.value
             frontierQueue = [p]
             newFrontier = []
-            print(f"frontierQueue: {len(frontierQueue)}")
+            # print(f"frontierQueue: {len(frontierQueue)}")
             while len(frontierQueue) > 0:
                 q = frontierQueue.pop(0)
 
@@ -209,8 +213,8 @@ def getFrontier(pose, costmap, logger):
 
             if len(newFrontier) > MIN_FRONTIER_SIZE:
                 frontiers.append(centroid(newFrontierCords))
-            else:
-                print(f"New frontier too small: {len(newFrontier)}")
+            # else:
+            #     print(f"New frontier too small: {len(newFrontier)}")
 
         for v in getNeighbors(p, costmap, fCache):
             if v.classification & (PointClassification.MapOpen.value | PointClassification.MapClosed.value) == 0:
@@ -235,15 +239,13 @@ def getNeighbors(point, costmap, fCache):
 
 def isFrontierPoint(point, costmap, fCache):
     if costmap.getCost(point.mapX, point.mapY) != OccupancyGrid2d.CostValues.NoInformation.value:
-        # print(f"isFrontierPoint failed: x={point.mapX} y={point.mapY} ")
         return False
-    # print(f"isFrontierPoint success: {costmap.getCost(point.mapX, point.mapY)} || {OccupancyGrid2d.CostValues.NoInformation.value}")
+    
     hasFree = False
     for n in getNeighbors(point, costmap, fCache):
         cost = costmap.getCost(n.mapX, n.mapY)
 
         if cost > OCC_THRESHOLD:
-            print(f"cost is greater than threshold: {cost}")
             return False
 
         if cost == OccupancyGrid2d.CostValues.FreeSpace.value:
@@ -300,21 +302,84 @@ class WaypointFollowerTest(Node):
     def moveToFrontiers(self):
         frontiers = getFrontier(self.currentPose, self.costmap, self.get_logger())
 
+        # SEARCH RADIUS
+        frontier_remove_list = []
+        for idx, frontier in enumerate(frontiers):
+            # subtract frontier pos with global start pos and take abs. if greater then SEARCH_RADIUS, means out of searching bounds
+            if abs(frontier[0] - GLOBAL_START_X) > SEARCH_RADIUS or abs(frontier[1] - GLOBAL_START_Y) > SEARCH_RADIUS:
+                # exceed_x = abs(frontier[0] - SEARCH_RADIUS) if abs(frontier[0] - SEARCH_RADIUS) > SEARCH_RADIUS else 0
+                # exceed_y = abs(frontier[1] - SEARCH_RADIUS) if abs(frontier[1] - SEARCH_RADIUS) > SEARCH_RADIUS else 0
+                # self.info_msg(f'Frontier exceeds search radius! Removing... ({frontier[0]:.3f}, {frontier[1]:.3f}) (Exceed: X={exceed_x:.4f}, Y={exceed_y:.4f})')
+                self.info_msg(f'Frontier exceeds search radius! Removing... ({frontier[0]:.3f}, {frontier[1]:.3f})')
+                frontier_remove_list.append(idx)
+        
+        frontier_remove_list.sort(reverse=True)
+        for idx in frontier_remove_list:
+            frontiers.pop(idx)
+
         if len(frontiers) == 0:
             self.info_msg('No More Frontiers')
             return
 
-        location = None
-        largestDist = 0
+        # find furthest point to travel to? 
+        # location = []
+        # largestDist = 0
+        # for f in frontiers:
+        #     dist = math.sqrt(((f[0] - self.currentPose.position.x)**2) + ((f[1] - self.currentPose.position.y)**2))
+        #     if  dist > largestDist:
+        #         largestDist = dist
+        #         location = [f] 
+
+        # travel to closest frontier instead
+        location = []
+        smallestDist = 999999
         for f in frontiers:
             dist = math.sqrt(((f[0] - self.currentPose.position.x)**2) + ((f[1] - self.currentPose.position.y)**2))
-            if  dist > largestDist:
-                largestDist = dist
+            if  dist < smallestDist:
+                smallestDist = dist
                 location = [f] 
 
+
+        #  loc[0],loc[1]      way[0],way[1]
+        #      0 ,   0    to     5  ,   5
+        # cosine rule
+
+        # a_length = math.sqrt(((location[0][0] - self.currentPose.position.x)**2) + ((location[0][1] - self.currentPose.position.y)**2))
+        # b_length = math.sqrt(((location[0][0] - self.currentPose.position.x)**2) + ((location[0][1] - self.currentPose.position.y)**2))
+        # angle_to_waypoint_rad = math.acos(()/())
+
+        # y = mx + c
+        # m = (y - c)/x
+        # angle_rad = math.atan( (location[0][1] - self.currentPose.position.y) / (location[0][0] - self.currentPose.position.x) )
+        # angle_rad = math.atan2( self.currentPose.position.y - location[0][1] , self.currentPose.position.x - location[0][0] )
+        # angle_rad = math.atan2( location[0][1] - self.currentPose.position.y  , location[0][0] - self.currentPose.position.x )
+
+        point_x = 0
+        point_y = 0
+        if self.currentPose.position.x > 0:
+            point_x = -self.currentPose.position.x
+        else:
+            point_x = abs(self.currentPose.position.x)
+
+        if self.currentPose.position.y > 0:
+            point_y = -self.currentPose.position.y
+        else:
+            point_y = abs(self.currentPose.position.y)
+        
+        angle_rad = math.atan2( location[0][1] + point_y  , location[0][0] + point_x )
+        z_quart = math.sin(angle_rad / 2)
+        angle_quart = math.cos(angle_rad / 2)
+        # print(f"angle rad {angle_rad}")
+        # print(f"angle deg {math.degrees(angle_rad)}")
+        # print(f"angle quart {angle_quart}")
+        
+
         #worldFrontiers = [self.costmap.mapToWorld(f[0], f[1]) for f in frontiers]
-        self.info_msg(f'World points {location}')
-        self.setWaypoints(location)
+        self.info_msg(f'Destination: ({location[0][0]:.3f}, {location[0][1]:.3f})')
+        self.info_msg(f'Current Pos: ({self.currentPose.position.x:.3f}, {self.currentPose.position.y:.3f})')
+        # print(f"current pose: {self.currentPose.position.x} (x), {self.currentPose.position.y} (y)")
+        # print(f"location: {location}")
+        self.setWaypoints(location, z_quart, angle_quart)
 
         # action_request = FollowWaypoints.Goal()
         action_request = NavigateToPose.Goal()
@@ -378,19 +443,25 @@ class WaypointFollowerTest(Node):
 
     def poseCallback(self, msg):
         if (not self.initial_pose_received):
-          self.info_msg('Received amcl_pose')
+            self.info_msg('Received pose')
+            GLOBAL_START_X = msg.pose.pose.position.x
+            GLOBAL_START_Y = msg.pose.pose.position.y
+            self.info_msg(f'Starting Position: X:{GLOBAL_START_X:.2f}, Y:{GLOBAL_START_Y:.2f}')
         self.currentPose = msg.pose.pose
         self.initial_pose_received = True
 
 
-    def setWaypoints(self, waypoints):
+    def setWaypoints(self, waypoints, q_z, q_w):
         self.waypoints = []
         for wp in waypoints:
             msg = PoseStamped()
             msg.header.frame_id = 'map'
             msg.pose.position.x = wp[0]
             msg.pose.position.y = wp[1]
-            msg.pose.orientation.w = 1.0
+            msg.pose.orientation.z = q_z
+            msg.pose.orientation.w = q_w
+            # msg.pose.orientation.w = 1.0
+            # print(f"WAYPOINT: {msg.pose.position.x} (x), \n{msg.pose.position.y} (y), \n{msg.pose.orientation.z} (z), \n{msg.pose.orientation.w} (w)")
             self.waypoints.append(msg)
 
     def run(self, block):
@@ -503,25 +574,16 @@ class WaypointFollowerTest(Node):
 
 def main(argv=sys.argv[1:]):
     rclpy.init()
-
-    # wait a few seconds to make sure entire stacks are up
-    #time.sleep(10)
-
-    # wps = [[-0.52, -0.54], [0.58, -0.55], [0.58, 0.52]]
-    starting_pose = [-2.0, -0.5]
-    # starting_pose = [0.0, 0.0]
-
+    starting_pose = [0.0, 0.0]
     test = WaypointFollowerTest()
-    #test.dumpCostmap()
-    # test.setWaypoints(wps)
-
     retry_count = 0
     retries = 2000
     while not test.initial_pose_received and retry_count <= retries:
         retry_count += 1
         test.info_msg('Setting initial pose')
         test.setInitialPose(starting_pose)
-        test.info_msg('Waiting for amcl_pose to be received')
+        # test.info_msg('Waiting for amcl_pose to be received')
+        test.info_msg('Waiting for pose to be received')
         rclpy.spin_once(test, timeout_sec=1.0)  # wait for poseCallback
 
     while test.costmap == None:
@@ -529,39 +591,9 @@ def main(argv=sys.argv[1:]):
         rclpy.spin_once(test, timeout_sec=1.0)
 
     test.moveToFrontiers()
-
     rclpy.spin(test)
-    # result = test.run(True)
-    # assert result
-
-    # # preempt with new point
-    # test.setWaypoints([starting_pose])
-    # result = test.run(False)
-    # time.sleep(2)
-    # test.setWaypoints([wps[1]])
-    # result = test.run(False)
-
-    # # cancel
-    # time.sleep(2)
-    # test.cancel_goal()
-
-    # # a failure case
-    # time.sleep(2)
-    # test.setWaypoints([[100.0, 100.0]])
-    # result = test.run(True)
-    # assert not result
-    # result = not result
-
-    # test.shutdown()
-    # test.info_msg('Done Shutting Down.')
-
-    # if not result:
-    #     test.info_msg('Exiting failed')
-    #     exit(1)
-    # else:
-    #     test.info_msg('Exiting passed')
-    #     exit(0)
-
+    test.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,9 @@
+<library path="semantic_costmap_layer">
+    <class
+        type="semantic_costmap_layer::SemanticLayer"
+        base_class_type="nav2_costmap_2d::Layer">
+        <description>
+            Semantic object layer
+        </description>
+    </class>
+</library>

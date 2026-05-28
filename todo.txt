@@ -12,3 +12,35 @@ GLOBAL PLANNER IS BROKEN, /MAP is returning -1
 ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 2.5, y: 2.0, z: 0.0}, orientation: {w: 1.0}}}" --once
 ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 2.5, y: -2.0, z: 0.0}, orientation: {w: 1.0}}}" --once
 ros2 topic pub /goal_pose geometry_msgs/PoseStamped "{header: {stamp: {sec: 0}, frame_id: 'map'}, pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}" --once
+
+ros2 launch yolo_bringup yolo.launch.py model:=yolo11n.pt input_image_topic:=/camera/image input_depth_topic:=/camera/depth_image input_depth_info_topic:=/camera/camera_info device:='cpu' use_3d:=True
+ros2 launch yolo_bringup yolo.launch.py model:=yolo11n.pt input_image_topic:=/camera/image input_depth_topic:=/camera/depth_image input_depth_info_topic:=/camera/camera_info device:='cuda' use_3d:=True
+
+robot keeps changing its mind and trying to uturn
+
+SEMANTIC NODE TF CRASH
+
+
+TRYING to fix yolo 3d depth issue in detect_3d_node
+
+fyp dimension
+length 120cm
+width 75.5cm
+wheel diameter 22cm
+ground to raised back 45.5cm
+arch rod 75cm (2x2cm)
+
+
+front back profile 4.5x4.5cm
+side profile 8x4cm
+wheel to side profile 41cm
+wheel to front back profile top 45.5cm
+wheel gap to side profile 14.5cm
+floor to side profile top 41cm
+robot width 76cm
+robot front to lidar mount 42cm, depth 5cm deep
+
+front wheel turn ~45deg each direction
+wheel thickness 5cm
+agv center to wheel center 52.5cm
+

@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -41,7 +41,6 @@ def generate_launch_description():
         remappings=[
             ('imu', '/imu'),
             ('odom', '/odometry/filtered'),
-            # ('odom', '/odom'),
         ]
     )
     
@@ -57,21 +56,6 @@ def generate_launch_description():
             {'publish_period_sec': publish_period_sec}
         ]
     )
-    # occupancy_grid_node = Node(
-    #     package='cartographer_ros',
-    #     executable='cartographer_occupancy_grid_node',
-    #     name='cartographer_occupancy_grid_node',
-    #     output='screen',
-    #     parameters=[
-    #         {'use_sim_time': use_sim_time},
-    #     ],
-    #     arguments=[
-    #         '-resolution', '0.05',
-    #         '-publish_period_sec', '0.5'
-    #     ],
-    # )
-
-
 
     pointcloud_to_laserscan_config = os.path.join(
         get_package_share_directory('cart_nav_test'),
@@ -84,18 +68,17 @@ def generate_launch_description():
         executable='pointcloud_to_laserscan_node',
         name='pointcloud_to_laserscan',
         remappings=[
-            ('cloud_in', '/lidar_3d/points'),   # your 3D lidar topic
-            # ('cloud_in', '/passthrough_filtered_cloud'),
-            ('scan',     '/scan')               # output to Cartographer
+            ('cloud_in', '/cropbox_filtered_cloud'),
+            ('scan',     '/scan')
         ],
         parameters=[
-            # pointcloud_to_laserscan_config,
-            {'use_sim_time': True,
-             'min_height': 0.10, 
-             'max_height': 1.0,
-            # 'target_frame': 'base_link',
-            'target_frame': 'base_footprint',
-            }]
+                {'use_sim_time': True,
+                'min_height': -1.15, #0.10, 
+                'max_height': 0.1, #1.0,
+                'range_max': 20.0,
+                'target_frame': 'lidar_3d',
+                },
+            ]
     )
 
     return LaunchDescription([

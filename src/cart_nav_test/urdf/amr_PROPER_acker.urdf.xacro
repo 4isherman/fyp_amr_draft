@@ -1,0 +1,840 @@
+<?xml version="1.0"?>
+<robot name="amr" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <material name="grey">
+        <color rgba="0.7 0.7 0.7 1" />
+    </material>
+    
+    <material name="green">
+        <color rgba="0 0.6 0 1" />
+    </material>
+
+    <material name="red">
+        <color rgba="1 0 0 1" />
+    </material>
+
+    <material name="white">
+        <color rgba="1 1 1 1" />
+    </material>
+
+    <material name="black">
+        <color rgba="0.1 0.1 0.1 1" />
+    </material>
+
+    <material name="blue">
+        <color rgba="0 0.2 0.8 1" />
+    </material>
+
+    <xacro:property name="robot_width" value="0.76"/>
+    <xacro:property name="robot_length" value="1.2"/>
+    <xacro:property name="robot_thickness" value="0.085"/>
+    <xacro:property name="robot_base_mass" value="4.0"/>
+
+    <xacro:property name="wheel_radius" value="0.11"/>
+    <xacro:property name="wheel_length" value="0.05"/>
+    <xacro:property name="wheel_mass" value="1.5"/>
+
+    <xacro:property name="lidar_radius" value="0.0375"/>
+    <xacro:property name="lidar_length" value="0.065"/>
+    <xacro:property name="lidar_mass" value="0.23"/>
+
+    <xacro:property name="zedcam_width" value="0.0431"/>
+    <xacro:property name="zedcam_length" value="0.1753"/>
+    <xacro:property name="zedcam_thickness" value="0.0303"/>
+    <xacro:property name="zedcam_mass" value="0.23"/>
+
+    <xacro:property name="lidar_arm_width" value="0.02"/>
+    <xacro:property name="lidar_arm_length" value="0.02"/>
+    <xacro:property name="lidar_arm_thickness" value="0.75"/>
+    <xacro:property name="lidar_arm_mass" value="0.2"/>
+
+    <xacro:property name="robot_base_midpoint" value="0.0425"/>
+    <xacro:property name="robot_base_wheel_gap" value="0.145"/>
+    <xacro:property name="wheel_gap_from_base_length" value="0.525"/> <!-- Wheel Base / 2 -->
+    <xacro:property name="wheel_gap_from_base_width" value="0.34"/> <!-- Track Width / 2 -->
+
+    <xacro:property name="steering_link_width" value="0.05"/>
+    <xacro:property name="steering_link_length" value="0.2"/>
+    <xacro:property name="steering_link_thickness" value="0.05"/>
+    <xacro:property name="steering_link_mass" value="0.01"/>
+
+    <link name="base_footprint" />
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="${robot_length} ${robot_width} ${robot_thickness}" />
+            </geometry>
+            <!-- <origin xyz="0 0 0.1" rpy="0 0 0" /> -->
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="green" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${robot_length} ${robot_width} ${robot_thickness}" />
+            </geometry>
+            <!-- <origin xyz="0 0 0.1" rpy="0 0 0" /> -->
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <!-- <origin xyz="0 0 0.1" rpy="0 0 0" /> -->
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${robot_base_mass}" />
+            <inertia 
+                ixx="${1/12 * robot_base_mass * (pow(robot_width, 2) + pow(robot_thickness, 2))}"
+                iyy="${1/12 * robot_base_mass * (pow(robot_length, 2) + pow(robot_thickness, 2))}"
+                izz="${1/12 * robot_base_mass * (pow(robot_width, 2) + pow(robot_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="lidar_arm_vert_left">
+        <visual>
+            <geometry>
+                <box size="${lidar_arm_length} ${lidar_arm_width} ${lidar_arm_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${lidar_arm_length} ${lidar_arm_width} ${lidar_arm_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${lidar_arm_mass}" />
+            <inertia 
+                ixx="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_thickness, 2))}"
+                iyy="${1/12 * lidar_arm_mass * (pow(lidar_arm_length, 2) + pow(lidar_arm_thickness, 2))}"
+                izz="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="lidar_arm_vert_right">
+        <visual>
+            <geometry>
+                <box size="${lidar_arm_width} ${lidar_arm_length} ${lidar_arm_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${lidar_arm_width} ${lidar_arm_length} ${lidar_arm_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${lidar_arm_mass}" />
+            <inertia 
+                ixx="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_thickness, 2))}"
+                iyy="${1/12 * lidar_arm_mass * (pow(lidar_arm_length, 2) + pow(lidar_arm_thickness, 2))}"
+                izz="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="lidar_arm_hori">
+        <visual>
+            <geometry>
+                <box size="${lidar_arm_width} ${lidar_arm_thickness} ${lidar_arm_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="green" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${lidar_arm_width} ${lidar_arm_thickness} ${lidar_arm_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${lidar_arm_mass}" />
+            <inertia 
+                ixx="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_thickness, 2))}"
+                iyy="${1/12 * lidar_arm_mass * (pow(lidar_arm_length, 2) + pow(lidar_arm_thickness, 2))}"
+                izz="${1/12 * lidar_arm_mass * (pow(lidar_arm_width, 2) + pow(lidar_arm_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+
+    <link name="lidar_3d">
+        <visual>
+            <geometry>
+                <cylinder radius="${lidar_radius}" length="${lidar_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="white" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <cylinder radius="${lidar_radius}" length="${lidar_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${lidar_mass}" />
+            <!-- Cylinder inertia -->
+            <inertia 
+                ixx="${1/12 * lidar_mass * (3*pow(lidar_radius, 2) + pow(lidar_length, 2))}"
+                iyy="${1/12 * lidar_mass * (3*pow(lidar_radius, 2) + pow(lidar_length, 2))}"
+                izz="${1/2 * lidar_mass * pow(lidar_radius, 2)}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <!-- <link name="camera_link">
+        <visual>
+            <geometry>
+                <box size="${zedcam_length} ${zedcam_width} ${zedcam_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 1.571" />
+            <material name="blue" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${zedcam_length} ${zedcam_width} ${zedcam_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 1.571" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 1.571" />
+            <mass value="${zedcam_mass}" />
+            <inertia 
+                ixx="${1/12 * zedcam_mass * (pow(zedcam_width, 2) + pow(zedcam_thickness, 2))}"
+                iyy="${1/12 * zedcam_mass * (pow(zedcam_length, 2) + pow(zedcam_thickness, 2))}"
+                izz="${1/12 * zedcam_mass * (pow(zedcam_width, 2) + pow(zedcam_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link> -->
+    <link name="camera_link">
+        <visual>
+            <geometry>
+                <box size="${zedcam_width} ${zedcam_length} ${zedcam_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${zedcam_width} ${zedcam_length} ${zedcam_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="${zedcam_mass}" />
+            <inertia 
+                ixx="${1/12 * zedcam_mass * (pow(zedcam_length, 2) + pow(zedcam_thickness, 2))}"
+                iyy="${1/12 * zedcam_mass * (pow(zedcam_width, 2) + pow(zedcam_thickness, 2))}"
+                izz="${1/12 * zedcam_mass * (pow(zedcam_width, 2) + pow(zedcam_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="camera_depth_frame" />
+
+    <link name="imu_link">
+        <visual>
+            <geometry>
+                <box size="0.02 0.02 0.01" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="grey" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="0.02 0.02 0.01" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.05" />
+            <inertia 
+                ixx="0.0000020833"
+                iyy="0.0000020833"
+                izz="0.000003333"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="navsat_link">
+        <visual>
+            <geometry>
+                <box size="0.05 0.05 0.02" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <material name="black" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="0.05 0.05 0.02" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="0.05" />
+            <inertia 
+                ixx="0.000012083"
+                iyy="0.000012083"
+                izz="0.000020833"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="front_left_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <material name="grey" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia
+                ixx="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                iyy="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                izz="${1/2 * wheel_mass * pow(wheel_radius, 2)}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="back_left_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <material name="grey" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia
+                ixx="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                iyy="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                izz="${1/2 * wheel_mass * pow(wheel_radius, 2)}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="front_right_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <material name="grey" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia
+                ixx="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                iyy="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                izz="${1/2 * wheel_mass * pow(wheel_radius, 2)}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="back_right_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <material name="grey" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+            </geometry>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0" rpy="1.57 0 0" />
+            <mass value="${wheel_mass}" />
+            <inertia
+                ixx="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                iyy="${1/12 * wheel_mass * (3*pow(wheel_radius, 2) + pow(wheel_length, 2))}"
+                izz="${1/2 * wheel_mass * pow(wheel_radius, 2)}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="front_left_steering_link">
+        <visual>
+            <geometry>
+                <box size="${steering_link_length} ${steering_link_width} ${steering_link_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${steering_link_length} ${steering_link_width} ${steering_link_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+            <mass value="${steering_link_mass}" />
+            <inertia 
+                ixx="${1/12 * steering_link_mass * (pow(steering_link_width, 2) + pow(steering_link_thickness, 2))}"
+                iyy="${1/12 * steering_link_mass * (pow(steering_link_length, 2) + pow(steering_link_thickness, 2))}"
+                izz="${1/12 * steering_link_mass * (pow(steering_link_width, 2) + pow(steering_link_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <link name="front_right_steering_link">
+        <visual>
+            <geometry>
+                <box size="${steering_link_length} ${steering_link_width} ${steering_link_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+            <material name="red" />
+        </visual>
+
+        <collision>
+            <geometry>
+                <box size="${steering_link_length} ${steering_link_width} ${steering_link_thickness}" />
+            </geometry>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0.15" rpy="0 0 0" />
+            <mass value="${steering_link_mass}" />
+            <inertia 
+                ixx="${1/12 * steering_link_mass * (pow(steering_link_width, 2) + pow(steering_link_thickness, 2))}"
+                iyy="${1/12 * steering_link_mass * (pow(steering_link_length, 2) + pow(steering_link_thickness, 2))}"
+                izz="${1/12 * steering_link_mass * (pow(steering_link_width, 2) + pow(steering_link_length, 2))}"
+                ixy="0"
+                ixz="0"
+                iyz="0"
+            />
+        </inertial>
+    </link>
+
+    <joint name="base_joint" type="fixed">
+        <parent link="base_footprint" />
+        <child link="base_link" />
+        <origin xyz="0 0 0.4125" rpy="0 0 0" />
+    </joint>
+
+    <joint name="base_lidar_arm_vert_left_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="lidar_arm_vert_left" />
+        <origin xyz="${robot_length / 6} 0.33 ${lidar_arm_thickness / 2}" rpy="0 0 0" />
+    </joint>
+
+    <joint name="base_lidar_arm_vert_right_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="lidar_arm_vert_right" />
+        <origin xyz="${robot_length / 6} -0.33 ${lidar_arm_thickness / 2}" rpy="0 0 0" />
+    </joint>
+
+    <joint name="base_lidar_arm_hori_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="lidar_arm_hori" />
+        <origin xyz="${robot_length / 6} 0 ${lidar_arm_thickness + lidar_arm_width/2}" rpy="0 0 0" />
+    </joint>
+
+    <!-- <joint name="base_lidar_3d_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="lidar_3d" />
+        <origin xyz="0.15 0 0.38" rpy="0 0 0" />
+    </joint> -->
+    <joint name="lidar_arm_hori_lidar_3d_joint" type="fixed">
+        <parent link="lidar_arm_hori" />
+        <child link="lidar_3d" />
+        <origin xyz="0 0 ${lidar_length / 2 + lidar_arm_width / 2}" rpy="0 0 0" />
+    </joint>
+
+    <joint name="camera_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="camera_link" />
+        <origin xyz="${robot_length / 2 - zedcam_width / 2} 0 ${(robot_thickness / 2) + (zedcam_thickness / 2)}" rpy="0 0 0" />
+    </joint>
+
+    <joint name="camera_depth_joint" type="fixed">
+        <parent link="camera_link" />
+        <child link="camera_depth_frame" />
+        <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+
+    <joint name="imu_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="imu_link" />
+        <origin xyz="0 0 0.19" rpy="0 0 0" />
+    </joint>
+
+    <joint name="navsat_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="navsat_link" />
+        <origin xyz="0.1 0 0.135" rpy="0 0 0" />
+    </joint>
+
+    <joint name="base_front_left_steering_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="front_left_steering_link"/>
+        <origin xyz="${wheel_gap_from_base_length} ${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.5" upper="0.5" effort="10" velocity="1.0"/>
+    </joint>
+
+    <joint name="base_front_left_wheel_joint" type="continuous">
+        <parent link="front_left_steering_link"/>
+        <child link="front_left_wheel"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Steering knuckle joint (this is what the plugin actuates to steer) -->
+    <joint name="base_front_right_steering_joint" type="revolute">
+        <parent link="base_link"/>
+        <child link="front_right_steering_link"/>
+        <origin xyz="${wheel_gap_from_base_length} -${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.5" upper="0.5" effort="10" velocity="1.0"/>
+    </joint>
+
+    <!-- Wheel spin joint, child of the steering link -->
+    <joint name="base_front_right_wheel_joint" type="continuous">
+        <parent link="front_right_steering_link"/>
+        <child link="front_right_wheel"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- <joint name="base_front_left_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="front_left_wheel" />
+        <origin xyz="${wheel_gap_from_base_length} ${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="1.0" friction="0.1"/>
+    </joint>
+
+    <joint name="base_front_right_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="front_right_wheel" />
+        <origin xyz="${wheel_gap_from_base_length} -${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="1.0" friction="0.1"/>
+    </joint>    -->
+
+    <joint name="base_back_left_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="back_left_wheel" />
+        <origin xyz="-${wheel_gap_from_base_length} ${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="1.0" friction="0.1"/>
+    </joint>
+
+    <joint name="base_back_right_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="back_right_wheel" />
+        <origin xyz="-${wheel_gap_from_base_length} -${wheel_gap_from_base_width} -${robot_base_midpoint + robot_base_wheel_gap + wheel_radius}" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <dynamics damping="1.0" friction="0.1"/>
+    </joint> 
+
+    <gazebo reference="base_link">
+        <material>Gazebo/Green</material>
+    </gazebo>
+
+    <gazebo reference="lidar_3d">
+        <material>Gazebo/White</material>
+    </gazebo>
+
+    <gazebo reference="camera_link">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="imu_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <gazebo reference="navsat_link">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="lidar_3d">
+        <sensor name="lidar_3d_sensor" type="gpu_lidar">
+            <topic>lidar_3d</topic>
+            <!-- <update_rate>15</update_rate> -->
+            <update_rate>30</update_rate>
+            <gz_frame_id>lidar_3d</gz_frame_id>
+            <lidar>
+                <scan>
+                    <horizontal>
+                        <samples>180</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-3.14</min_angle>
+                        <max_angle>3.14</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>32</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-0.26</min_angle>
+                        <max_angle>0.26</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                     <min>0.05</min><!--0.15 -->
+                    <max>20.0</max>
+                </range>
+            </lidar>
+            <always_on>true</always_on>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="camera_link">
+        <sensor name="depth_camera" type="rgbd_camera">
+            <update_rate>15</update_rate>
+            <topic>camera</topic>
+            <gz_frame_id>camera_link</gz_frame_id>
+            <camera>
+                <horizontal_fov>1.5708</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.1</near>
+                    <far>6.0</far>
+                </clip>
+                <depth_camera>
+                    <clip>
+                        <near>0.1</near>
+                        <far>6.0</far>
+                    </clip>
+                </depth_camera>
+            </camera>
+            <always_on>1</always_on>
+            <visualize>true</visualize>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="imu_link">
+        <sensor name="imu_sensor" type="imu">
+            <!-- <update_rate>50</update_rate> -->
+            <update_rate>30</update_rate>
+            <topic>imu</topic>
+            <gz_frame_id>imu_link</gz_frame_id>
+            <always_on>1</always_on>
+            <imu>
+                <orientation_reference_frame>
+                    <localization>ENU</localization>
+                </orientation_reference_frame>
+                <angular_velocity>
+                    <x><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></x>
+                    <y><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></y>
+                    <z><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></z>
+                </angular_velocity>
+                <linear_acceleration>
+                    <x><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></x>
+                    <y><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></y>
+                    <z><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></z>
+                </linear_acceleration>
+            </imu>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="navsat_link">
+        <sensor name="navsat" type="navsat">
+            <always_on>1</always_on>
+            <update_rate>10</update_rate>
+            <topic>navsat</topic>
+            <gz_frame_id>navsat_link</gz_frame_id>
+        </sensor>
+    </gazebo>
+
+    <gazebo>
+        <plugin filename="gz-sim-ackermann-steering-system" name="gz::sim::systems::AckermannSteering">
+            <left_steering_joint>base_front_left_steering_joint</left_steering_joint>
+            <right_steering_joint>base_front_right_steering_joint</right_steering_joint>
+
+            <left_joint>base_back_left_wheel_joint</left_joint>
+            <right_joint>base_back_right_wheel_joint</right_joint>
+
+            <wheel_separation>${wheel_gap_from_base_width * 2}</wheel_separation>   <!-- track width  -->
+            <wheel_base>${wheel_gap_from_base_length * 2}</wheel_base>
+            <wheel_radius>${wheel_radius}</wheel_radius>
+
+            <steering_limit>0.7854</steering_limit>  <!-- radians -->
+
+            <topic>cmd_vel</topic>
+            <odom_topic>odom</odom_topic>
+            <frame_id>odom</frame_id>
+            <!-- <child_frame_id>base_footprint</child_frame_id> -->
+            <child_frame_id>camera_link</child_frame_id>
+
+            <odom_publish_frequency>30</odom_publish_frequency>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="base_front_left_steering_joint">
+        <implicitSpringDamper>1</implicitSpringDamper>
+    </gazebo>
+
+    <gazebo reference="base_front_right_steering_joint">
+        <implicitSpringDamper>1</implicitSpringDamper>
+    </gazebo>
+
+    <gazebo reference="front_left_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+        <!-- <slip1>0.02</slip1>
+        <slip2>0.02</slip2>
+        <kp>100000</kp>
+        <kd>1</kd> -->
+    </gazebo>
+
+    <gazebo reference="front_right_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+        <!-- <slip1>0.02</slip1>
+        <slip2>0.02</slip2>
+        <kp>100000</kp>
+        <kd>1</kd> -->
+    </gazebo>
+
+    <gazebo reference="back_left_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+        <!-- <slip1>0.02</slip1>
+        <slip2>0.02</slip2>
+        <kp>100000</kp>
+        <kd>1</kd> -->
+    </gazebo>
+
+    <gazebo reference="back_right_wheel">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+        <!-- <slip1>0.02</slip1>
+        <slip2>0.02</slip2>
+        <kp>100000</kp>
+        <kd>1</kd> -->
+    </gazebo>
+</robot>
+
+
+    <!-- <gazebo>
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <left_joint>base_front_left_wheel_joint</left_joint>
+            <left_joint>base_back_left_wheel_joint</left_joint>
+            <right_joint>base_front_right_wheel_joint</right_joint>
+            <right_joint>base_back_right_wheel_joint</right_joint>
+            <wheel_separation>0.55</wheel_separation>
+            <wheel_radius>0.07</wheel_radius>
+            <odom_publish_frequency>50</odom_publish_frequency>
+            <max_linear_acceleration>1.0</max_linear_acceleration>
+            <max_angular_acceleration>0.4</max_angular_acceleration>
+            <topic>cmd_vel</topic>
+            <odom_topic>odom</odom_topic>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_footprint</child_frame_id>
+        </plugin>
+    </gazebo> -->
