@@ -3,12 +3,12 @@ navsat_transform_node:
     use_sim_time: true
     frequency: 10.0
     delay: 0.0
-
     magnetic_declination_radians: 0.0
     yaw_offset: 0.0
-
     zero_altitude: true
     publish_filtered_gps: true
-
     use_odometry_yaw: true
     wait_for_datum: false
+
+
+    

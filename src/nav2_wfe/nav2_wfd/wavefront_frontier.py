@@ -43,7 +43,7 @@ OCC_THRESHOLD = 1
 # MIN_FRONTIER_SIZE = 5
 MIN_FRONTIER_SIZE = 100
 
-SEARCH_RADIUS = 12
+SEARCH_RADIUS = 30
 GLOBAL_START_X = 0
 GLOBAL_START_Y = 0
 
@@ -307,15 +307,14 @@ class WaypointFollowerTest(Node):
         for idx, frontier in enumerate(frontiers):
             # subtract frontier pos with global start pos and take abs. if greater then SEARCH_RADIUS, means out of searching bounds
             if abs(frontier[0] - GLOBAL_START_X) > SEARCH_RADIUS or abs(frontier[1] - GLOBAL_START_Y) > SEARCH_RADIUS:
-                # exceed_x = abs(frontier[0] - SEARCH_RADIUS) if abs(frontier[0] - SEARCH_RADIUS) > SEARCH_RADIUS else 0
-                # exceed_y = abs(frontier[1] - SEARCH_RADIUS) if abs(frontier[1] - SEARCH_RADIUS) > SEARCH_RADIUS else 0
-                # self.info_msg(f'Frontier exceeds search radius! Removing... ({frontier[0]:.3f}, {frontier[1]:.3f}) (Exceed: X={exceed_x:.4f}, Y={exceed_y:.4f})')
                 self.info_msg(f'Frontier exceeds search radius! Removing... ({frontier[0]:.3f}, {frontier[1]:.3f})')
-                frontier_remove_list.append(idx)
+                frontier_remove_list.append(idx) # get the index of the frontier to be removed
         
+        # reverse frontier_remove_list so that the largest index (end of the list) gets removed first
+        # and does not mess up the indexing of the frontier list when removing elements
         frontier_remove_list.sort(reverse=True)
         for idx in frontier_remove_list:
-            frontiers.pop(idx)
+            frontiers.pop(idx) # remove point from the frontier list
 
         if len(frontiers) == 0:
             self.info_msg('No More Frontiers')

@@ -39,8 +39,9 @@ def generate_launch_description():
             '-configuration_basename', configuration_basename,
         ],
         remappings=[
-            ('imu', '/imu'),
+            ('imu', '/imu_corrected'),
             ('odom', '/odometry/filtered'),
+            # ('odom', '/odom'),
         ]
     )
     
@@ -69,14 +70,17 @@ def generate_launch_description():
         name='pointcloud_to_laserscan',
         remappings=[
             ('cloud_in', '/cropbox_filtered_cloud'),
-            ('scan',     '/scan')
+            ('scan', '/scan')
         ],
         parameters=[
                 {'use_sim_time': True,
-                'min_height': -1.15, #0.10, 
-                'max_height': 0.1, #1.0,
+                'min_height': -1.0, #-1.15, #0.10, 
+                'max_height': 0.5, #1.0,
                 'range_max': 20.0,
                 'target_frame': 'lidar_3d',
+                # 'target_frame': 'base_footpint',
+                # 'min_height': 0.2, #-1.15, #0.10, 
+                # 'max_height': 1.3, #1.0,
                 },
             ]
     )

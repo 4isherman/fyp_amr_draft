@@ -219,6 +219,9 @@ namespace semantic_costmap_layer
 
         for (const auto &obj : objects_)
         {
+            if (obj.class_name != "person")
+                continue;
+                
             // top/bottom left/right of bounding box
             // unsigned int mx_tl, my_tl, mx_tr, my_tr, mx_bl, my_bl, mx_br, my_br;
             WorldToMapObj tl, tr, bl, br;

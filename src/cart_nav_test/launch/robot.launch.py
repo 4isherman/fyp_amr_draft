@@ -13,7 +13,9 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory(pkg_name)
     
     # world file name and path
-    world_name = 'parking_lot_plug_rotated.sdf'
+    # world_name = 'parking_lot_plug_rotated.sdf'
+    # world_name = 'parking_lot_mod.sdf'
+    world_name = 'wavefront_map.sdf'
     world_file_path = os.path.join(pkg_dir, 'worlds', f'{world_name}')
     
     # load xacro
@@ -54,7 +56,8 @@ def generate_launch_description():
     ekf_config = os.path.join(
         get_package_share_directory('cart_nav_test'),
         'config',
-        'ekf_def.yaml'
+        # 'ekf_def.yaml',
+        'ekf_def_mod.yaml'
     )
     ekf_node = Node(
         package='robot_localization',
@@ -82,9 +85,12 @@ def generate_launch_description():
             navsat_config
          ],
         remappings=[
-            ("imu/data", "/imu"),
-            ("gps/fix", "/navsat"),
-            ("odometry/filtered", "/odometry/filtered")
+            # ("imu/data", "/imu"),
+            ("imu/data", "/imu_corrected"),
+            # ("gps/fix", "/navsat"),
+            ("gps/fix", "/navsat_corrected"),
+            # ("odometry/filtered", "/odometry/filtered")
+            ("odometry/filtered", "/odom")
         ]
     )
     
@@ -173,9 +179,12 @@ def generate_launch_description():
             # Bridge GPS/NavSat data
             '/navsat@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
             # Bridge Odometry data - CRITICAL FOR CARTOGRAPHER
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            # '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            '/odom_uncorrected@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             # Bridge TF from Gazebo
-            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            # '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+
+            # '/model/my_robot/pose@geometry_msgs/msg/Pose@gz.msgs.Pose'
         ],
         parameters=[
             {'use_sim_time': use_sim_time}
@@ -212,19 +221,29 @@ def generate_launch_description():
             ('input', '/lidar_3d/points'),
             ('output', '/cropbox_filtered_cloud'),
         ],
+        # parameters=[{
+        #     'use_sim_time': use_sim_time,
+        #     # 'input_frame': 'base_footprint',
+        #     'input_frame': 'lidar_3d',
+        #     'min_x': -0.03,
+        #     'max_x': 0.03,
+        #     'min_y': -0.76 / 2,
+        #     'max_y': 0.76 / 2,
+        #     'min_z': -0.1,
+        #     'max_z': 0.1,
+        #     'negative': True,   # THIS removes the box region
+        # },
         parameters=[{
             'use_sim_time': use_sim_time,
-            # 'input_frame': 'base_footprint',
-            'input_frame': 'lidar_3d',
+            'input_frame': 'base_footprint',
             'min_x': -0.03,
-            'max_x': 0.03,
+            'max_x': 0.3,
             'min_y': -0.76 / 2,
             'max_y': 0.76 / 2,
-            'min_z': -0.1,
-            'max_z': 0.1,
+            'min_z': 1.0,
+            'max_z': 1.25,
             'negative': True,   # THIS removes the box region
-        },
-        ]
+        }],
     )
 
     # voxel grid filter to remove excess points
@@ -268,6 +287,34 @@ def generate_launch_description():
         name='semantic_bridge'
     )
 
+    gps_covariance_fix_node = Node(
+        package='cart_nav_test',
+        executable='gps_covariance_fix',
+        name='gps_covariance_fix'
+    )
+    odom_covariance_fix_node = Node(
+        package='cart_nav_test',
+        executable='odom_covariance_fix',
+        name='odom_covariance_fix'
+    )
+    imu_covariance_fix_node = Node(
+        package='cart_nav_test',
+        executable='imu_covariance_fix',
+        name='imu_covariance_fix'
+    )
+
+    # testing only
+    static_transform_publisher_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_transform_publisher',
+        arguments=[
+            '--yaw', '3.1417',
+            '--frame-id', 'lidar_arm_hori',
+            '--child-frame-id', 'lidar_3d',
+        ],
+    )
+
     teleop_twist_joy_pkg_dir = LaunchConfiguration(
         'teleop_twist_joy_pkg_dir',
         default=os.path.join(get_package_share_directory('teleop_twist_joy'), 'launch'))
@@ -307,6 +354,10 @@ def generate_launch_description():
         filter_crop_box_node,
         # filter_voxel_grid_node,
         semantic_bridge_node,
+        gps_covariance_fix_node,
+        odom_covariance_fix_node,
+        imu_covariance_fix_node,
+        # static_transform_publisher_node,
 
         # teleop joystick launch
         IncludeLaunchDescription(

@@ -65,7 +65,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_launch,
-        TimerAction(period=5.0, actions=[yolo_ros_launch, cartographer_launch]),
+        # TimerAction(period=5.0, actions=[yolo_ros_launch, cartographer_launch]),
+        TimerAction(period=5.0, actions=[cartographer_launch]),
         TimerAction(period=10.0, actions=[nav2_launch]),
         # TimerAction(period=15.0, actions=[yolo_ros_launch]),
     ])

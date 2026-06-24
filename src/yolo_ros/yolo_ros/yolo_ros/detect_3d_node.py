@@ -643,9 +643,14 @@ class Detect3DNode(LifecycleNode):
         # msg.size.x = w
         # msg.size.y = h
         # msg.size.z = float(z_max - z_min)
-        msg.size.x = h
-        msg.size.y = float(z_max - z_min)
-        msg.size.z = w
+
+        # msg.size.x = h
+        # msg.size.y = float(z_max - z_min)
+        # msg.size.z = w
+
+        msg.size.x = float(z_max - z_min)
+        msg.size.y = h
+        msg.size.z = w 
 
         return msg
 

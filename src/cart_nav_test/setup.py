@@ -55,7 +55,10 @@ setup(
         'console_scripts': [
             "cmd_vel_subscriber = cart_nav_test.cmd_vel_subscriber:main",
             "semantic_bridge = cart_nav_test.semantic_bridge:main",
-            "yolo_pointcloud_fusion = cart_nav_test.yolo_pointcloud_fusion:main",
+            # "yolo_pointcloud_fusion = cart_nav_test.yolo_pointcloud_fusion:main",
+            "gps_covariance_fix = cart_nav_test.gps_covariance_fix:main",
+            "odom_covariance_fix = cart_nav_test.odom_covariance_fix:main",
+            "imu_covariance_fix = cart_nav_test.imu_covariance_fix:main",
         ],
     },
 )
