@@ -1,6 +1,5 @@
 import rclpy
 from rclpy.node import Node
-# from vision_msgs.msg import Detection3DArray
 from yolo_msgs.msg import DetectionArray
 from geometry_msgs.msg import PointStamped
 
@@ -32,7 +31,6 @@ class SemanticBridge(Node):
 
     def callback(self, msg):
         out = SemanticObjectArray()
-        # self.get_logger().info(f"{msg}")
 
         for det in msg.detections:
             obj = SemanticObject()
@@ -59,7 +57,7 @@ class SemanticBridge(Node):
                     # "camera_depth_frame",
                     timeout=rclpy.duration.Duration(seconds=1.0)
                 )
-                tf.point.y += 0.6
+                tf.point.y += 0.6 # hardcoded offset as bounding box seems to be offset by that value
                 obj.position = tf.point
                 out.objects.append(obj)
                 self.get_logger().info(f"Transformed obj: {obj}")
@@ -74,11 +72,8 @@ class SemanticBridge(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = SemanticBridge()
-    # rclpy.spin(node) # spin will make the node run indefinitely until killed
 
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-    # node.destroy_node()
-    # rclpy.shutdown()

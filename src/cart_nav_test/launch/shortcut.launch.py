@@ -6,9 +6,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
-    # Get the package directory
-    pkg_name = 'cart_nav_test'  # Replace with your package name
-    pkg_dir = get_package_share_directory(pkg_name)
+    pkg_name = 'cart_nav_test'
 
     launch_dir = LaunchConfiguration(
         'launch_dir',
@@ -33,11 +31,10 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([yolo_ros_pkg_dir, '/yolo.launch.py']),
         launch_arguments={
         'model': 'yolov8m.pt',
-        # 'model': 'yolov8m-seg.pt',
         'input_image_topic': '/camera/image',
         'input_depth_topic': '/camera/depth_image',
         'input_depth_info_topic': '/camera/camera_info',
-        'device': 'cuda',
+        'device': 'cuda', # change to CPU if development PC has no cuda supported GPU
         'use_3d': 'True',
         'threshold': '0.9',
         'use_sim_time': 'True',
@@ -47,28 +44,9 @@ def generate_launch_description():
         }.items()
     )
 
-    # launch_nodes = [
-    #     IncludeLaunchDescription(
-    #         PythonLaunchDescriptionSource([launch_dir, '/robot_launch.py']),
-    #         launch_arguments={}.items(),
-    #     ),
-    #     IncludeLaunchDescription(
-    #         PythonLaunchDescriptionSource([launch_dir, '/cartographer2d.launch.py']),
-    #         launch_arguments={}.items(),
-    #     ),
-    #     IncludeLaunchDescription(
-    #         PythonLaunchDescriptionSource([launch_dir, '/nav2.launch.py']),
-    #         launch_arguments={}.items(),
-    #     ),
-    # ]
-    print(type(cartographer_launch))
-
+    # staggered launch for robot, yolo, cartographer, and nav2
     return LaunchDescription([
         robot_launch,
-        # TimerAction(period=5.0, actions=[yolo_ros_launch, cartographer_launch]),
-        TimerAction(period=5.0, actions=[cartographer_launch]),
+        TimerAction(period=5.0, actions=[yolo_ros_launch, cartographer_launch]),
         TimerAction(period=10.0, actions=[nav2_launch]),
-        # TimerAction(period=15.0, actions=[yolo_ros_launch]),
     ])
-
-    # return LaunchDescription(launch_nodes)

@@ -13,9 +13,8 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory(pkg_name)
     
     # world file name and path
-    # world_name = 'parking_lot_plug_rotated.sdf'
-    # world_name = 'parking_lot_mod.sdf'
-    world_name = 'wavefront_map.sdf'
+    world_name = 'parking_lot_mod.sdf'
+    # world_name = 'wavefront_map.sdf'
     world_file_path = os.path.join(pkg_dir, 'worlds', f'{world_name}')
     
     # load xacro
@@ -56,7 +55,6 @@ def generate_launch_description():
     ekf_config = os.path.join(
         get_package_share_directory('cart_nav_test'),
         'config',
-        # 'ekf_def.yaml',
         'ekf_def_mod.yaml'
     )
     ekf_node = Node(
@@ -94,31 +92,6 @@ def generate_launch_description():
         ]
     )
     
-    # Map Server (optional - if you have a map to display)
-    # map_server = Node(
-    #     package='nav2_map_server',
-    #     executable='map_server',
-    #     name='map_server',
-    #     output='screen',
-    #     parameters=[{
-    #         'yaml_filename': map_file,
-    #         'use_sim_time': use_sim_time
-    #     }]
-    # ) if os.path.exists(map_file) else None
-    
-    # # Lifecycle manager for map server (needed to activate it)
-    # lifecycle_manager = Node(
-    #     package='nav2_lifecycle_manager',
-    #     executable='lifecycle_manager',
-    #     name='lifecycle_manager_localization',
-    #     output='screen',
-    #     parameters=[{
-    #         'use_sim_time': use_sim_time,
-    #         'autostart': True,
-    #         'node_names': ['map_server']
-    #     }]
-    # ) if os.path.exists(map_file) else None
-    
     # load rviz
     rviz_config_file = os.path.join(pkg_dir, 'rviz', 'robot_view_nav.rviz')
     rviz = Node(
@@ -151,7 +124,7 @@ def generate_launch_description():
             '-x', '0',
             '-y', '0',
             '-z', '0.2',
-            # '-Y', '3.142',
+            # '-Y', '3.142', # optional yaw setting
         ],
         output='screen'
     )
@@ -162,29 +135,36 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+
             # Bridge the 3D lidar point cloud data
             '/lidar_3d/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
+
             # Bridge depth camera RGB image
             '/camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
+
             # Bridge depth camera depth image
             '/camera/depth_image@sensor_msgs/msg/Image@gz.msgs.Image',
+
             # Bridge depth camera point cloud
             '/camera/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
+
             # Bridge camera info
             '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
+
             # Bridge IMU data
             '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU',
+
             # Bridge cmd_vel for robot control
             '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
+
             # Bridge GPS/NavSat data
             '/navsat@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
-            # Bridge Odometry data - CRITICAL FOR CARTOGRAPHER
-            # '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+
+            # Bridge Odometry data
             '/odom_uncorrected@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+
             # Bridge TF from Gazebo
             # '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-
-            # '/model/my_robot/pose@geometry_msgs/msg/Pose@gz.msgs.Pose'
         ],
         parameters=[
             {'use_sim_time': use_sim_time}
@@ -221,18 +201,6 @@ def generate_launch_description():
             ('input', '/lidar_3d/points'),
             ('output', '/cropbox_filtered_cloud'),
         ],
-        # parameters=[{
-        #     'use_sim_time': use_sim_time,
-        #     # 'input_frame': 'base_footprint',
-        #     'input_frame': 'lidar_3d',
-        #     'min_x': -0.03,
-        #     'max_x': 0.03,
-        #     'min_y': -0.76 / 2,
-        #     'max_y': 0.76 / 2,
-        #     'min_z': -0.1,
-        #     'max_z': 0.1,
-        #     'negative': True,   # THIS removes the box region
-        # },
         parameters=[{
             'use_sim_time': use_sim_time,
             'input_frame': 'base_footprint',
@@ -246,40 +214,6 @@ def generate_launch_description():
         }],
     )
 
-    # voxel grid filter to remove excess points
-    # output used for saving pcd only
-    filter_voxel_grid_node = Node(
-        package='pcl_ros',
-        executable='filter_voxel_grid_node',
-        name='filter_voxel_grid_node',
-        remappings=[
-            ('input', '/passthrough_filtered_cloud'),
-            ('output', '/cloud_final')
-        ],
-        parameters=[{
-            'use_sim_time': True,
-            'filter_limit_max': 2.0,
-            'filter_limit_min': -1.0,
-            'leaf_size': 0.1  # 10cm resolution
-        }]
-    )
-
-    filter_voxel_grid_camera_node = Node(
-        package='pcl_ros',
-        executable='filter_voxel_grid_node',
-        name='filter_voxel_grid_camera_node',
-        remappings=[
-            ('input', '/camera/points'),
-            ('output', '/camera/points/downsampled')
-        ],
-        parameters=[{
-            'use_sim_time': True,
-            'filter_limit_max': 2.0,
-            'filter_limit_min': -1.0,
-            'leaf_size': 0.04  # 10cm resolution
-        }]
-    )
-
     # semantic node launch
     semantic_bridge_node = Node(
         package='cart_nav_test',
@@ -287,6 +221,7 @@ def generate_launch_description():
         name='semantic_bridge'
     )
 
+    # covariances for ekf
     gps_covariance_fix_node = Node(
         package='cart_nav_test',
         executable='gps_covariance_fix',
@@ -303,17 +238,6 @@ def generate_launch_description():
         name='imu_covariance_fix'
     )
 
-    # testing only
-    static_transform_publisher_node = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_transform_publisher',
-        arguments=[
-            '--yaw', '3.1417',
-            '--frame-id', 'lidar_arm_hori',
-            '--child-frame-id', 'lidar_3d',
-        ],
-    )
 
     teleop_twist_joy_pkg_dir = LaunchConfiguration(
         'teleop_twist_joy_pkg_dir',
@@ -350,23 +274,21 @@ def generate_launch_description():
         gz_ros_bridge,
         ekf_node,
         navsat_node,
-        # filter_passthrough_node,
         filter_crop_box_node,
-        # filter_voxel_grid_node,
         semantic_bridge_node,
         gps_covariance_fix_node,
         odom_covariance_fix_node,
         imu_covariance_fix_node,
-        # static_transform_publisher_node,
 
         # teleop joystick launch
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([teleop_twist_joy_pkg_dir, '/teleop-launch.py']),
-            launch_arguments={
-                'joy_config': '', # leave this empty so it will load only the config file
-                'config_filepath': teleop_config_file
-                }.items(),
-        ),
+        # uncomment this if teleop with xbox controller
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([teleop_twist_joy_pkg_dir, '/teleop-launch.py']),
+        #     launch_arguments={
+        #         'joy_config': '', # leave this empty so it will load only the config file
+        #         'config_filepath': teleop_config_file
+        #         }.items(),
+        # ),
     ]
 
     

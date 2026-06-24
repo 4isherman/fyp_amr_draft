@@ -3,19 +3,14 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
+
 def generate_launch_description():
     pkg_name = 'cart_nav_test'
-    pkg_dir = get_package_share_directory(pkg_name)
-    
-    # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_tuned_2d.yaml')
-    # nav2_params = os.path.join(pkg_dir, 'config', 'nav2_params_amr_proper.yaml')
-
     nav2_params = os.path.join(
-        get_package_share_directory('cart_nav_test'),
+        get_package_share_directory(pkg_name),
         'config',
         'nav2_params_amr_proper.yaml'
     )
-
 
     planner_server = Node(
         package='nav2_planner',
@@ -34,14 +29,6 @@ def generate_launch_description():
         remappings=[('cmd_vel', 'cmd_vel_nav')]
     )
 
-    smoother_server = Node(
-        package='nav2_smoother',
-        executable='smoother_server',
-        name='smoother_server',
-        output='screen',
-        parameters=[nav2_params]
-    )
-
     behavior_server = Node(
         package='nav2_behaviors',
         executable='behavior_server',
@@ -56,18 +43,6 @@ def generate_launch_description():
         name='bt_navigator',
         output='screen',
         parameters=[nav2_params]
-    )
-
-    velocity_smoother = Node(
-        package='nav2_velocity_smoother',
-        executable='velocity_smoother',
-        name='velocity_smoother',
-        output='screen',
-        parameters=[nav2_params],
-        remappings=[
-            ('cmd_vel', 'cmd_vel_nav'),
-            ('cmd_vel_smoothed', 'cmd_vel')
-        ]
     )
 
     collision_monitor = Node(
@@ -86,18 +61,6 @@ def generate_launch_description():
         parameters=[nav2_params]
     )
 
-    # map_file = os.path.join(pkg_dir, 'maps', 'CARTOTEST_map.yaml')
-    # map_server = Node(
-    #     package='nav2_map_server',
-    #     executable='map_server',
-    #     name='map_server',
-    #     output='screen',
-    #     parameters=[{
-    #         'use_sim_time': True,
-    #         'yaml_filename': map_file,
-    #     }]
-    # )
-
     lifecycle_manager = Node(
         package='nav2_lifecycle_manager',
         executable='lifecycle_manager',
@@ -109,10 +72,8 @@ def generate_launch_description():
             'node_names': [
                 'planner_server',
                 'controller_server',
-                # 'smoother_server',
                 'bt_navigator',
                 'behavior_server',
-                # 'velocity_smoother',
                 'collision_monitor',
                 'waypoint_follower',
             ]
@@ -122,12 +83,9 @@ def generate_launch_description():
     return LaunchDescription([
         planner_server,
         controller_server,
-        # smoother_server,
         behavior_server,
         bt_navigator,
-        # velocity_smoother,
         collision_monitor,
         waypoint_follower,
-        # map_server,
         lifecycle_manager,
     ])

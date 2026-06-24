@@ -15,7 +15,7 @@ def generate_launch_description():
         'configuration_directory',
         default=os.path.join(pkg_dir, 'config')
     )
-    cartographer_config_lua = 'turtlebot3_lds_2d.lua'
+    cartographer_config_lua = 'cartographer_2d_config.lua'
     configuration_basename = LaunchConfiguration(
         'configuration_basename',
         default=cartographer_config_lua

@@ -166,7 +166,6 @@ def findFree(mx, my, costmap):
 
 def getFrontier(pose, costmap, logger):
     fCache = FrontierCache()
-    # print("getFrontier Called")
     fCache.clear()
 
     mx, my = costmap.worldToMap(pose.position.x, pose.position.y)
@@ -188,13 +187,11 @@ def getFrontier(pose, costmap, logger):
             p.classification = p.classification | PointClassification.FrontierOpen.value
             frontierQueue = [p]
             newFrontier = []
-            # print(f"frontierQueue: {len(frontierQueue)}")
             while len(frontierQueue) > 0:
                 q = frontierQueue.pop(0)
 
                 if q.classification & (PointClassification.MapClosed.value | PointClassification.FrontierClosed.value) != 0:
                     continue
-                # print("isFrontierPoint2 Called")
                 if isFrontierPoint(q, costmap, fCache):
                     newFrontier.append(q)
 
@@ -213,8 +210,6 @@ def getFrontier(pose, costmap, logger):
 
             if len(newFrontier) > MIN_FRONTIER_SIZE:
                 frontiers.append(centroid(newFrontierCords))
-            # else:
-            #     print(f"New frontier too small: {len(newFrontier)}")
 
         for v in getNeighbors(p, costmap, fCache):
             if v.classification & (PointClassification.MapOpen.value | PointClassification.MapClosed.value) == 0:
@@ -320,7 +315,7 @@ class WaypointFollowerTest(Node):
             self.info_msg('No More Frontiers')
             return
 
-        # find furthest point to travel to? 
+        # find furthest point to travel to
         # location = []
         # largestDist = 0
         # for f in frontiers:
@@ -337,21 +332,6 @@ class WaypointFollowerTest(Node):
             if  dist < smallestDist:
                 smallestDist = dist
                 location = [f] 
-
-
-        #  loc[0],loc[1]      way[0],way[1]
-        #      0 ,   0    to     5  ,   5
-        # cosine rule
-
-        # a_length = math.sqrt(((location[0][0] - self.currentPose.position.x)**2) + ((location[0][1] - self.currentPose.position.y)**2))
-        # b_length = math.sqrt(((location[0][0] - self.currentPose.position.x)**2) + ((location[0][1] - self.currentPose.position.y)**2))
-        # angle_to_waypoint_rad = math.acos(()/())
-
-        # y = mx + c
-        # m = (y - c)/x
-        # angle_rad = math.atan( (location[0][1] - self.currentPose.position.y) / (location[0][0] - self.currentPose.position.x) )
-        # angle_rad = math.atan2( self.currentPose.position.y - location[0][1] , self.currentPose.position.x - location[0][0] )
-        # angle_rad = math.atan2( location[0][1] - self.currentPose.position.y  , location[0][0] - self.currentPose.position.x )
 
         point_x = 0
         point_y = 0
@@ -373,11 +353,8 @@ class WaypointFollowerTest(Node):
         # print(f"angle quart {angle_quart}")
         
 
-        #worldFrontiers = [self.costmap.mapToWorld(f[0], f[1]) for f in frontiers]
         self.info_msg(f'Destination: ({location[0][0]:.3f}, {location[0][1]:.3f})')
         self.info_msg(f'Current Pos: ({self.currentPose.position.x:.3f}, {self.currentPose.position.y:.3f})')
-        # print(f"current pose: {self.currentPose.position.x} (x), {self.currentPose.position.y} (y)")
-        # print(f"location: {location}")
         self.setWaypoints(location, z_quart, angle_quart)
 
         # action_request = FollowWaypoints.Goal()
@@ -459,8 +436,6 @@ class WaypointFollowerTest(Node):
             msg.pose.position.y = wp[1]
             msg.pose.orientation.z = q_z
             msg.pose.orientation.w = q_w
-            # msg.pose.orientation.w = 1.0
-            # print(f"WAYPOINT: {msg.pose.position.x} (x), \n{msg.pose.position.y} (y), \n{msg.pose.orientation.z} (z), \n{msg.pose.orientation.w} (w)")
             self.waypoints.append(msg)
 
     def run(self, block):
@@ -581,7 +556,6 @@ def main(argv=sys.argv[1:]):
         retry_count += 1
         test.info_msg('Setting initial pose')
         test.setInitialPose(starting_pose)
-        # test.info_msg('Waiting for amcl_pose to be received')
         test.info_msg('Waiting for pose to be received')
         rclpy.spin_once(test, timeout_sec=1.0)  # wait for poseCallback
 
